@@ -125,94 +125,26 @@ Server akan aktif pada:
 
 Semua response dikembalikan dalam format standard JSON.
 
-### 1. Root & Dokumentasi Singkat
+### 1. Root
 - **Method:** `GET`
 - **URL:** `/`
 - **Response (200 OK):**
 ```json
 {
-  "success": true,
-  "name": "Library Book Loan REST API",
-  "description": "REST API sederhana untuk layanan pencatatan peminjaman buku perpustakaan",
-  "status": "online",
-  "version": "1.0.0",
-  "documentation": {
-    "endpoints": [ ... ]
-  }
+  "message": "Library Loan API is running"
 }
 ```
 
 ---
 
-### 2. Mendapatkan Semua Data Peminjaman (Read with Filter Query)
+### 2. Mendapatkan Semua Data Peminjaman (Filter: ?status=Terlambat)
 - **Method:** `GET`
-- **URL:** `/loans` (atau `/api/loans`)
-- **Query Parameters yang didukung:**
-  - `status`: Filter berdasarkan status (contoh: `?status=Terlambat`, `?status=Dipinjam`, `?status=Kembali`) - *case-insensitive*.
-  - `member_name`: Filter pencarian nama anggota (contoh: `?member_name=Budi`).
-  - `book_title`: Filter pencarian judul buku (contoh: `?book_title=Laskar`).
-  - `sortBy`: Kolom urutan (`created_at`, `due_date`, `status`, `member_name`, `book_title`).
-  - `order`: Arah pengurutan (`asc` atau `desc`, default: `desc`).
-  - `page` & `limit`: Paginasi data (contoh: `?page=1&limit=10`).
-
-#### Contoh Request:
-```bash
-curl -X GET "http://localhost:3000/loans?status=Terlambat"
-```
+- **URL:** `/loans?status=Terlambat`
 
 #### Contoh Response (200 OK):
 ```json
-{
-  "success": true,
-  "message": "Data peminjaman berhasil diambil",
-  "total": 2,
-  "filters": {
-    "status": "Terlambat",
-    "member_name": null,
-    "book_title": null,
-    "sortBy": "created_at",
-    "order": "desc"
-  },
-  "data": [
-    {
-      "id": "e30e12d3-a456-4266-9e6b-001234567890",
-      "book_title": "Laskar Pelangi",
-      "member_name": "Ahmad Fauzi",
-      "borrow_date": "2026-09-10",
-      "due_date": "2026-09-24",
-      "status": "Terlambat",
-      "created_at": "2026-09-10T08:30:00.000Z"
-    },
-    {
-      "id": "c12d4567-e89b-12d3-a456-426614174000",
-      "book_title": "Negeri 5 Menara",
-      "member_name": "Dewi Lestari",
-      "borrow_date": "2026-08-15",
-      "due_date": "2026-08-29",
-      "status": "Terlambat",
-      "created_at": "2026-08-15T09:15:00.000Z"
-    }
-  ]
-}
-```
-
----
-
-### 3. Mendapatkan Detail Peminjaman Berdasarkan ID
-- **Method:** `GET`
-- **URL:** `/loans/:id`
-
-#### Contoh Request:
-```bash
-curl -X GET "http://localhost:3000/loans/e30e12d3-a456-4266-9e6b-001234567890"
-```
-
-#### Contoh Response (200 OK):
-```json
-{
-  "success": true,
-  "message": "Data peminjaman berhasil ditemukan",
-  "data": {
+[
+  {
     "id": "e30e12d3-a456-4266-9e6b-001234567890",
     "book_title": "Laskar Pelangi",
     "member_name": "Ahmad Fauzi",
@@ -221,14 +153,32 @@ curl -X GET "http://localhost:3000/loans/e30e12d3-a456-4266-9e6b-001234567890"
     "status": "Terlambat",
     "created_at": "2026-09-10T08:30:00.000Z"
   }
+]
+```
+
+---
+
+### 3. Mendapatkan Detail Peminjaman Berdasarkan ID
+- **Method:** `GET`
+- **URL:** `/loans/:id`
+
+#### Contoh Response (200 OK):
+```json
+{
+  "id": "e30e12d3-a456-4266-9e6b-001234567890",
+  "book_title": "Laskar Pelangi",
+  "member_name": "Ahmad Fauzi",
+  "borrow_date": "2026-09-10",
+  "due_date": "2026-09-24",
+  "status": "Terlambat",
+  "created_at": "2026-09-10T08:30:00.000Z"
 }
 ```
 
 #### Response jika tidak ditemukan (404 Not Found):
 ```json
 {
-  "success": false,
-  "message": "Data peminjaman dengan ID 'e30e12d3-a456-4266-9e6b-001234567890' tidak ditemukan"
+  "message": "Data tidak ditemukan"
 }
 ```
 
@@ -265,29 +215,13 @@ curl -X POST "http://localhost:3000/loans" \
 #### Contoh Response (201 Created):
 ```json
 {
-  "success": true,
-  "message": "Data peminjaman buku berhasil dibuat",
-  "data": {
-    "id": "7a8b9c0d-1e2f-3a4b-5c6d-7e8f9a0b1c2d",
-    "book_title": "Bumi Manusia",
-    "member_name": "Siti Aminah",
-    "borrow_date": "2026-10-10",
-    "due_date": "2026-10-24",
-    "status": "Dipinjam",
-    "created_at": "2026-10-10T09:20:00.000Z"
-  }
-}
-```
-
-#### Response Validasi Gagal (400 Bad Request):
-```json
-{
-  "success": false,
-  "message": "Validasi gagal",
-  "errors": [
-    "Field \"book_title\" wajib diisi dan berupa string",
-    "Field \"due_date\" wajib diisi (format: YYYY-MM-DD)"
-  ]
+  "id": "7a8b9c0d-1e2f-3a4b-5c6d-7e8f9a0b1c2d",
+  "book_title": "Bumi Manusia",
+  "member_name": "Siti Aminah",
+  "borrow_date": "2026-10-10",
+  "due_date": "2026-10-24",
+  "status": "Dipinjam",
+  "created_at": "2026-10-10T09:20:00.000Z"
 }
 ```
 
@@ -298,36 +232,23 @@ curl -X POST "http://localhost:3000/loans" \
 - **URL:** `/loans/:id`
 - **Headers:** `Content-Type: application/json`
 
-#### Request Body (contoh mengubah status menjadi Kembali):
+#### Request Body:
 ```json
 {
   "status": "Kembali"
 }
 ```
 
-#### Contoh Request:
-```bash
-curl -X PATCH "http://localhost:3000/loans/7a8b9c0d-1e2f-3a4b-5c6d-7e8f9a0b1c2d" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "status": "Kembali"
-  }'
-```
-
 #### Contoh Response (200 OK):
 ```json
 {
-  "success": true,
-  "message": "Data peminjaman berhasil diperbarui",
-  "data": {
-    "id": "7a8b9c0d-1e2f-3a4b-5c6d-7e8f9a0b1c2d",
-    "book_title": "Bumi Manusia",
-    "member_name": "Siti Aminah",
-    "borrow_date": "2026-10-10",
-    "due_date": "2026-10-24",
-    "status": "Kembali",
-    "created_at": "2026-10-10T09:20:00.000Z"
-  }
+  "id": "7a8b9c0d-1e2f-3a4b-5c6d-7e8f9a0b1c2d",
+  "book_title": "Bumi Manusia",
+  "member_name": "Siti Aminah",
+  "borrow_date": "2026-10-10",
+  "due_date": "2026-10-24",
+  "status": "Kembali",
+  "created_at": "2026-10-10T09:20:00.000Z"
 }
 ```
 
@@ -337,25 +258,10 @@ curl -X PATCH "http://localhost:3000/loans/7a8b9c0d-1e2f-3a4b-5c6d-7e8f9a0b1c2d"
 - **Method:** `DELETE`
 - **URL:** `/loans/:id`
 
-#### Contoh Request:
-```bash
-curl -X DELETE "http://localhost:3000/loans/7a8b9c0d-1e2f-3a4b-5c6d-7e8f9a0b1c2d"
-```
-
 #### Contoh Response (200 OK):
 ```json
 {
-  "success": true,
-  "message": "Data peminjaman berhasil dihapus",
-  "deletedData": {
-    "id": "7a8b9c0d-1e2f-3a4b-5c6d-7e8f9a0b1c2d",
-    "book_title": "Bumi Manusia",
-    "member_name": "Siti Aminah",
-    "borrow_date": "2026-10-10",
-    "due_date": "2026-10-24",
-    "status": "Kembali",
-    "created_at": "2026-10-10T09:20:00.000Z"
-  }
+  "message": "Data berhasil dihapus"
 }
 ```
 
