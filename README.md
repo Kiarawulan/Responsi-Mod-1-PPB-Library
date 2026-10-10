@@ -1,57 +1,55 @@
-# 📚 Library Loan API (Layanan Pencatatan Peminjaman Buku Perpustakaan)
+# 📚 REST API Layanan Pencatatan Peminjaman Buku Perpustakaan
+> **Responsi Modul 1 - Praktikum Pemrograman Bergerak (PPB)**
 
-REST API sederhana, modern, dan andal untuk sistem pencatatan peminjaman buku perpustakaan. Dibangun menggunakan **Node.js**, **Express.js**, dan **Supabase (PostgreSQL)**, serta dirancang agar siap dideploy secara serverless ke **Vercel**.
-
----
-
-## 🌐 Link Deployment Vercel
-
-- **Production URL:** `https://library-loan-api-kiarawulan.vercel.app` *(atau URL Vercel hasil deployment proyek Anda)*
-- **API Status & Root Documentation:** `GET /`
-- **Loans Endpoint:** `GET /loans`
+REST API sederhana, cepat, dan andal untuk sistem pencatatan peminjaman buku perpustakaan. Dibangun menggunakan **Node.js**, **Express.js**, dan database **Supabase (PostgreSQL)**, serta siap di-deploy secara serverless ke **Vercel**.
 
 ---
 
-## 🎯 Deskripsi Umum & Tujuan Proyek
+## 🔗 Tautan Pengumpulan (Output)
 
-Proyek ini bertujuan menyediakan backend API yang terstruktur dan mudah diintegrasikan untuk kebutuhan administrasi perpustakaan, meliputi:
-1. **Pencatatan Peminjaman Buku:** Memudahkan staf perpustakaan mencatat buku yang dipinjam oleh anggota.
-2. **Pelacakan Status & Keterlambatan:** Memantau status peminjaman (`Dipinjam`, `Kembali`, `Terlambat`) melalui fitur filter query yang fleksibel.
-3. **Manajemen Penuh (CRUD):** Memungkinkan staf membaca, menambah, mengubah, dan menghapus catatan peminjaman dengan validasi data yang ketat.
-4. **Cloud-Native & Serverless:** Menggunakan Supabase sebagai database PostgreSQL di cloud dan Vercel sebagai hosting platform tanpa perlu memelihara server fisik.
+- **Link Repository GitHub:** [https://github.com/Kiarawulan/Responsi-Mod-1-PPB-Library](https://github.com/Kiarawulan/Responsi-Mod-1-PPB-Library)
+- **Link Base URL Deployment Vercel:** [https://responsi-mod-1-ppb-library.vercel.app](https://responsi-mod-1-ppb-library.vercel.app) *(atau URL Vercel hasil deployment proyek Anda)*
 
 ---
 
-## 🛠️ Tech Stack
+## 🎯 1. Deskripsi Umum & Tujuan Proyek
+
+Proyek ini dibangun untuk memenuhi ketentuan tugas Responsi Modul 1 PPB dengan fitur utama:
+1. **Pencatatan Peminjaman Buku (Create):** Menambahkan data peminjaman baru oleh anggota perpustakaan.
+2. **Pengambilan Data Peminjaman (Read):** Menampilkan seluruh data peminjaman atau detail berdasarkan ID peminjaman.
+3. **Filter Query Status (Filter):** Fitur filter query status peminjaman (contoh: `GET /loans?status=Terlambat`, `?status=Dipinjam`, `?status=Kembali`).
+4. **Pembaruan Data (Update):** Memperbarui data peminjaman (seperti mengubah status buku menjadi `Kembali` atau mengubah tanggal jatuh tempo).
+5. **Penghapusan Data (Delete):** Menghapus catatan peminjaman berdasarkan ID.
+
+---
+
+## 🛠️ 2. Tech Stack
 
 - **Runtime:** [Node.js](https://nodejs.org/) (v18+)
-- **Framework:** [Express.js](https://expressjs.com/) (v5)
-- **Database:** [Supabase](https://supabase.com/) (PostgreSQL Database)
+- **Framework:** [Express.js](https://expressjs.com/)
+- **Database:** [Supabase](https://supabase.com/) (PostgreSQL Cloud)
 - **Database Client:** `@supabase/supabase-js`
-- **Deployment Platform:** [Vercel](https://vercel.com/) (Serverless Functions)
-- **Utilitas:** `dotenv`, `cors`
+- **Deployment:** [Vercel](https://vercel.com/) (Serverless Functions)
 
 ---
 
-## 🗄️ Struktur Data & Schema Database
+## 🗄️ 3. Struktur Data / Schema Database
 
-API ini menggunakan tabel utama bernama `loans` pada Supabase PostgreSQL:
-
-### Definisi Kolom Tabel `loans`
+Tabel utama yang digunakan bernama `loans` pada database PostgreSQL Supabase:
 
 | Nama Kolom | Tipe Data | Keterangan |
 | :--- | :--- | :--- |
-| `id` | `UUID` | Primary Key, otomatis di-generate (`gen_random_uuid()`) |
+| `id` | `UUID` | Primary Key, otomatis dibuat (`gen_random_uuid()`) |
 | `book_title` | `TEXT` | Judul buku yang dipinjam (Wajib / NOT NULL) |
-| `member_name` | `TEXT` | Nama anggota perpustakaan yang meminjam (Wajib / NOT NULL) |
-| `borrow_date` | `DATE` | Tanggal peminjaman (Format: `YYYY-MM-DD`, Default: `CURRENT_DATE`) |
-| `due_date` | `DATE` | Tanggal jatuh tempo pengembalian (Format: `YYYY-MM-DD`, Wajib) |
-| `status` | `TEXT` | Status peminjaman: `Dipinjam`, `Kembali`, `Terlambat` (Default: `Dipinjam`) |
-| `created_at` | `TIMESTAMPTZ`| Waktu data dibuat dalam UTC (Default: `now()`) |
+| `member_name` | `TEXT` | Nama anggota peminjam (Wajib / NOT NULL) |
+| `borrow_date` | `DATE` | Tanggal pinjam (`YYYY-MM-DD`, Default: `CURRENT_DATE`) |
+| `due_date` | `DATE` | Batas waktu pengembalian (`YYYY-MM-DD`, Wajib) |
+| `status` | `TEXT` | Status (`Dipinjam`, `Kembali`, `Terlambat`, Default: `Dipinjam`) |
+| `created_at` | `TIMESTAMPTZ`| Waktu pembuatan data (Default: `now()`) |
 
-### Skrip SQL DDL (Supabase)
+### Skrip SQL DDL & Data Awal (database.sql)
 
-Anda dapat menjalankan skrip berikut di menu **SQL Editor** pada Dashboard Supabase (file juga tersedia di [`database.sql`](./database.sql)):
+Jalankan query ini di **SQL Editor** Supabase Dashboard:
 
 ```sql
 -- 1. Buat Tabel loans
@@ -65,87 +63,95 @@ CREATE TABLE IF NOT EXISTS loans (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 2. Nonaktifkan RLS agar REST API dapat melakukan operasi CRUD secara penuh
+-- 2. Nonaktifkan Row Level Security (RLS) agar API publik/anonim dapat melakukan CRUD
 ALTER TABLE loans DISABLE ROW LEVEL SECURITY;
+
+-- 3. Data Awal Dummy untuk Pengujian
+INSERT INTO loans (book_title, member_name, borrow_date, due_date, status)
+VALUES
+    ('Laskar Pelangi', 'Ahmad Fauzi', '2026-09-10', '2026-09-24', 'Terlambat'),
+    ('Bumi Manusia', 'Siti Aminah', '2026-10-01', '2026-10-15', 'Dipinjam'),
+    ('Filosofi Teras', 'Budi Santoso', '2026-09-20', '2026-10-04', 'Kembali'),
+    ('Negeri 5 Menara', 'Dewi Lestari', '2026-08-15', '2026-08-29', 'Terlambat');
 ```
 
-> **Catatan Penting Row Level Security (RLS):**  
-> Supabase mengaktifkan RLS secara default pada setiap tabel baru. Agar API publik/anonim dapat melakukan operasi **INSERT, UPDATE, dan DELETE**, Anda wajib menonaktifkan RLS (`ALTER TABLE loans DISABLE ROW LEVEL SECURITY;`) atau menambahkan policy `FOR ALL TO anon USING (true) WITH CHECK (true);`.
+> **PENTING:** Pastikan perintah `ALTER TABLE loans DISABLE ROW LEVEL SECURITY;` dijalankan agar operasi `INSERT`, `UPDATE`, dan `DELETE` tidak dicegah oleh RLS Supabase.
 
 ---
 
-## 🚀 Panduan Instalasi & Menjalankan Lokal
+## 📖 4. Contoh Request dan Response
 
-### 1. Prasyarat
-- Pastikan telah menginstal [Node.js](https://nodejs.org/) (versi 18 atau lebih baru) dan npm.
-- Memiliki akun [Supabase](https://supabase.com/) dengan project aktif.
-
-### 2. Kloning Repository
-```bash
-git clone https://github.com/Kiarawulan/library-loan-api.git
-cd library-loan-api
-```
-
-### 3. Instalasi Dependensi
-```bash
-npm install
-```
-
-### 4. Konfigurasi Environment Variable
-Buat file `.env` di root direktori proyek (salin dari `.env.example`):
-
-```bash
-cp .env.example .env
-```
-
-Isi variabel berikut:
-```env
-SUPABASE_URL=https://vgizetmhfdmfqjrcchdm.supabase.co
-SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-PORT=3000
-```
-
-### 5. Menjalankan Server Lokal
-Jalankan server Express:
-```bash
-npm run dev
-# atau
-npm start
-```
-
-Server akan aktif pada:
-```
-🚀 Server perpustakaan berjalan di http://localhost:3000
-📚 Endpoint Loans: http://localhost:3000/loans
-```
-
----
-
-## 📖 Dokumentasi Endpoint & Contoh Request / Response
-
-Semua response dikembalikan dalam format standard JSON.
-
-### 1. Root
+### A. Root Endpoint (Cek Status API)
 - **Method:** `GET`
 - **URL:** `/`
 - **Response (200 OK):**
 ```json
 {
+  "success": true,
   "message": "Library Loan API is running"
 }
 ```
 
 ---
 
-### 2. Mendapatkan Semua Data Peminjaman (Filter: ?status=Terlambat)
+### B. Mendapatkan Semua Data Peminjaman (Read)
+- **Method:** `GET`
+- **URL:** `/loans`
+- **Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Berhasil mengambil data peminjaman",
+  "data": [
+    {
+      "id": "e30e12d3-a456-4266-9e6b-001234567890",
+      "book_title": "Bumi Manusia",
+      "member_name": "Siti Aminah",
+      "borrow_date": "2026-10-01",
+      "due_date": "2026-10-15",
+      "status": "Dipinjam",
+      "created_at": "2026-10-01T08:00:00.000Z"
+    }
+  ]
+}
+```
+
+---
+
+### C. Filter Query Berdasarkan Status (Fitur Utama)
 - **Method:** `GET`
 - **URL:** `/loans?status=Terlambat`
-
-#### Contoh Response (200 OK):
+- **Response (200 OK):**
 ```json
-[
-  {
-    "id": "e30e12d3-a456-4266-9e6b-001234567890",
+{
+  "success": true,
+  "message": "Berhasil mengambil data peminjaman",
+  "data": [
+    {
+      "id": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+      "book_title": "Laskar Pelangi",
+      "member_name": "Ahmad Fauzi",
+      "borrow_date": "2026-09-10",
+      "due_date": "2026-09-24",
+      "status": "Terlambat",
+      "created_at": "2026-09-10T08:30:00.000Z"
+    }
+  ]
+}
+```
+
+---
+
+### D. Mendapatkan Detail Peminjaman Berdasarkan ID
+- **Method:** `GET`
+- **URL:** `/loans/:id`
+- **Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Berhasil mengambil detail peminjaman",
+  "data": {
+    "id": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
     "book_title": "Laskar Pelangi",
     "member_name": "Ahmad Fauzi",
     "borrow_date": "2026-09-10",
@@ -153,184 +159,125 @@ Semua response dikembalikan dalam format standard JSON.
     "status": "Terlambat",
     "created_at": "2026-09-10T08:30:00.000Z"
   }
-]
-```
-
----
-
-### 3. Mendapatkan Detail Peminjaman Berdasarkan ID
-- **Method:** `GET`
-- **URL:** `/loans/:id`
-
-#### Contoh Response (200 OK):
-```json
-{
-  "id": "e30e12d3-a456-4266-9e6b-001234567890",
-  "book_title": "Laskar Pelangi",
-  "member_name": "Ahmad Fauzi",
-  "borrow_date": "2026-09-10",
-  "due_date": "2026-09-24",
-  "status": "Terlambat",
-  "created_at": "2026-09-10T08:30:00.000Z"
-}
-```
-
-#### Response jika tidak ditemukan (404 Not Found):
-```json
-{
-  "message": "Data tidak ditemukan"
 }
 ```
 
 ---
 
-### 4. Menambahkan Catatan Peminjaman Buku Baru (Create)
+### E. Menambahkan Data Peminjaman Baru (Create)
 - **Method:** `POST`
 - **URL:** `/loans`
 - **Headers:** `Content-Type: application/json`
-
-#### Request Body:
+- **Request Body:**
 ```json
 {
-  "book_title": "Bumi Manusia",
-  "member_name": "Siti Aminah",
+  "book_title": "Atomic Habits",
+  "member_name": "Rian Pratama",
   "borrow_date": "2026-10-10",
   "due_date": "2026-10-24",
   "status": "Dipinjam"
 }
 ```
-*Catatan: `borrow_date` bersifat opsional (default: tanggal saat request dibuat). `status` bersifat opsional (default: `"Dipinjam"`).*
+*(Catatan: `borrow_date` opsional, default hari ini. `status` opsional, default "Dipinjam".)*
 
-#### Contoh Request:
-```bash
-curl -X POST "http://localhost:3000/loans" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "book_title": "Bumi Manusia",
-    "member_name": "Siti Aminah",
-    "due_date": "2026-10-24"
-  }'
-```
-
-#### Contoh Response (201 Created):
+- **Response (201 Created):**
 ```json
 {
-  "id": "7a8b9c0d-1e2f-3a4b-5c6d-7e8f9a0b1c2d",
-  "book_title": "Bumi Manusia",
-  "member_name": "Siti Aminah",
-  "borrow_date": "2026-10-10",
-  "due_date": "2026-10-24",
-  "status": "Dipinjam",
-  "created_at": "2026-10-10T09:20:00.000Z"
+  "success": true,
+  "message": "Peminjaman buku berhasil dicatat",
+  "data": {
+    "id": "f8e7d6c5-b4a3-2109-8765-43210fedcba9",
+    "book_title": "Atomic Habits",
+    "member_name": "Rian Pratama",
+    "borrow_date": "2026-10-10",
+    "due_date": "2026-10-24",
+    "status": "Dipinjam",
+    "created_at": "2026-10-10T09:00:00.000Z"
+  }
 }
 ```
 
 ---
 
-### 5. Memperbarui Data Peminjaman (Update)
+### F. Memperbarui Data Peminjaman (Update)
 - **Method:** `PUT` atau `PATCH`
 - **URL:** `/loans/:id`
 - **Headers:** `Content-Type: application/json`
-
-#### Request Body:
+- **Request Body:**
 ```json
 {
   "status": "Kembali"
 }
 ```
-
-#### Contoh Response (200 OK):
+- **Response (200 OK):**
 ```json
 {
-  "id": "7a8b9c0d-1e2f-3a4b-5c6d-7e8f9a0b1c2d",
-  "book_title": "Bumi Manusia",
-  "member_name": "Siti Aminah",
-  "borrow_date": "2026-10-10",
-  "due_date": "2026-10-24",
-  "status": "Kembali",
-  "created_at": "2026-10-10T09:20:00.000Z"
+  "success": true,
+  "message": "Data peminjaman berhasil diperbarui",
+  "data": {
+    "id": "f8e7d6c5-b4a3-2109-8765-43210fedcba9",
+    "book_title": "Atomic Habits",
+    "member_name": "Rian Pratama",
+    "borrow_date": "2026-10-10",
+    "due_date": "2026-10-24",
+    "status": "Kembali",
+    "created_at": "2026-10-10T09:00:00.000Z"
+  }
 }
 ```
 
 ---
 
-### 6. Menghapus Data Peminjaman (Delete)
+### G. Menghapus Data Peminjaman (Delete)
 - **Method:** `DELETE`
 - **URL:** `/loans/:id`
-
-#### Contoh Response (200 OK):
+- **Response (200 OK):**
 ```json
 {
-  "message": "Data berhasil dihapus"
+  "success": true,
+  "message": "Data peminjaman berhasil dihapus"
 }
 ```
 
 ---
 
-## ☁️ Panduan Deployment ke Vercel
+## 💻 5. Panduan Instalasi & Cara Menjalankan Lokal
 
-Aplikasi ini telah dikonfigurasi dengan file [`vercel.json`](./vercel.json) dan adapter serverless di [`api/index.js`](./api/index.js), sehingga dapat dideploy ke Vercel secara instan.
+### 1. Clone Repository
+```bash
+git clone https://github.com/Kiarawulan/Responsi-Mod-1-PPB-Library.git
+cd Responsi-Mod-1-PPB-Library
+```
 
-### Cara 1: Deploy Melalui Vercel Dashboard (Rekomendasi)
-1. **Push source code ke GitHub Repository:**
-   ```bash
-   git add .
-   git commit -m "feat: initial library loan rest api"
-   git branch -M main
-   git remote add origin https://github.com/Kiarawulan/library-loan-api.git
-   git push -u origin main
-   ```
-2. Buka [Vercel Dashboard](https://vercel.com/dashboard) dan klik **"Add New"** > **"Project"**.
-3. Pilih repository `library-loan-api` dari GitHub Anda.
-4. Pada bagian **Environment Variables**, tambahkan:
+### 2. Instalasi Dependensi
+```bash
+npm install
+```
+
+### 3. Konfigurasi Environment Variable (.env)
+Buat file `.env` di root folder dengan isi:
+```env
+SUPABASE_URL=https://vgizetmhfdmfqjrcchdm.supabase.co
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnaXpldG1oZmRtZnFqcmNjaGRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MTkwNTcsImV4cCI6MjEwNzE5NTA1N30.8MQove7kjN9wM0I58KZ7_WxxdVM3TJa-PZpRVKd1ywg
+PORT=3000
+```
+
+### 4. Menjalankan Server Lokal
+```bash
+npm run dev
+# atau
+npm start
+```
+Akses di browser / Postman: `http://localhost:3000/loans`
+
+---
+
+## ☁️ 6. Panduan Deployment ke Vercel
+
+1. Buka [Vercel Dashboard](https://vercel.com/) dan login.
+2. Klik tombol **"Add New"** > **"Project"**.
+3. Pilih repository **`Responsi-Mod-1-PPB-Library`** dari akun GitHub Anda.
+4. Buka tab **Environment Variables** dan tambahkan:
    - `SUPABASE_URL`: `https://vgizetmhfdmfqjrcchdm.supabase.co`
-   - `SUPABASE_ANON_KEY`: *[Anon Key Supabase Anda]*
-5. Klik **"Deploy"**. Vercel akan otomatis melakukan proses build dan memberikan URL publik.
-
-### Cara 2: Deploy Melalui Vercel CLI
-1. Jalankan perintah login:
-   ```bash
-   npx vercel login
-   ```
-2. Deploy ke lingkungan production:
-   ```bash
-   npx vercel --prod
-   ```
-3. Set environment variables di Vercel:
-   ```bash
-   npx vercel env add SUPABASE_URL
-   npx vercel env add SUPABASE_ANON_KEY
-   ```
-
----
-
-## 📁 Struktur Direktori Proyek
-
-```
-library-loan-api/
-├── api/
-│   └── index.js              # Entry point serverless function untuk Vercel
-├── src/
-│   ├── config/
-│   │   └── supabase.js       # Inisialisasi koneksi client Supabase
-│   ├── controllers/
-│   │   └── loanController.js # Logika CRUD dan filter peminjaman buku
-│   ├── middlewares/
-│   │   └── errorHandler.js   # Middleware penanganan error 404 & 500
-│   ├── routes/
-│   │   └── loanRoutes.js     # Definisi routing endpoint /loans
-│   └── app.js                # Konfigurasi Express, middleware, & root route
-├── .env                      # Variabel lingkungan lokal (diabaikan oleh git)
-├── .env.example              # Template variabel lingkungan
-├── .gitignore                # File & direktori yang diabaikan git
-├── database.sql              # Skrip SQL skema tabel & data sampel
-├── package.json              # Definisi dependensi & skrip npm
-├── server.js                 # Entry point untuk menjalankan server lokal
-├── vercel.json               # Konfigurasi rewrite routing serverless Vercel
-└── README.md                 # Dokumentasi komprehensif proyek
-```
-
----
-
-## 📝 Lisensi
-Proyek ini dibuat untuk keperluan pengujian dan pembelajaran di bawah lisensi [ISC](https://opensource.org/licenses/ISC).
+   - `SUPABASE_ANON_KEY`: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnaXpldG1oZmRtZnFqcmNjaGRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MTkwNTcsImV4cCI6MjEwNzE5NTA1N30.8MQove7kjN9wM0I58KZ7_WxxdVM3TJa-PZpRVKd1ywg`
+5. Klik **"Deploy"**. Selesai! Vercel akan menghasilkan link Base URL yang dapat diakses publik.
